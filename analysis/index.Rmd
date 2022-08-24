@@ -8,4 +8,6 @@ editor_options:
   chunk_output_type: console
 ---
 
-Welcome to my research website.
+Notebook con los análisis de las acequias y el NDVI
+
+- [Análisis exploratorio](explore_data.html)

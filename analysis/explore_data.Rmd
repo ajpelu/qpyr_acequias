@@ -1,0 +1,115 @@
+---
+title: "Data Exploration"
+author: "[@ajpelu](https://twitter.com/ajpelu); Bonet, FJ; Acosta, C; ..."
+date: "2022-08-24"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Introduction
+
+```{r global-options, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, 
+                      warning=FALSE, message=FALSE)
+```
+
+
+```{r}
+library(tidyverse)
+library(here)
+library(janitor)
+library(ggstatsplot)
+```
+
+- Prepara datos 
+
+```{r, echo=TRUE}
+raw <- read_csv2(here::here("data/Matriz_datos_acequias.csv")) %>% 
+  janitor::clean_names() 
+  
+
+# Remove number from column' names
+names(raw) <- gsub("[0-9]$", "", names(raw))
+
+
+raw <- raw %>% 
+  mutate(acequia= recode(join_acequ,
+    "A_Grande" = "grande",
+    "A. Almiar" = "almiar",
+    "A. Barjas" = "barjas"
+  )) %>% # Recode acequias
+  rename(elevation = altura_)
+
+```
+
+## Exploración inicial 
+
+- Un pequeño mapita feo para ver los pixeles como se distribuyen 
+
+```{r}
+raw %>% ggplot(aes(x = coord_x, y = coord_y, colour = acequia)) + geom_point()
+```
+
+## ¿Existe diferencias para atributos de la vegetación en función de la acequia? 
+
+### Mean mean 
+Mean_mean: promedio de los valores promedio de NDVI de la serie temporal (1984 – 2021)
+
+```{r}
+raw %>% 
+  ggbetweenstats(
+    x = acequia,
+    y = mean_mean, 
+    type = "p",
+    xlab = "Acequia", 
+    ylab = "Promedio valores NDVI anuales"
+  )
+```
+
+### Mean max 
+
+Mean_max: promedio de los valores máximos de NDVI de la serie temporal (1984 – 2021)
+
+```{r}
+raw %>% 
+  ggbetweenstats(
+    x = acequia,
+    y = mean_max, 
+    type = "p",
+    xlab = "Acequia", 
+    ylab = "Promedio valores máximos NDVI anuales"
+  )
+```
+
+### Tend mean
+Tend_mean: tendencia de los valores promedio de NDVI de la serie temporal (1984 – 2021)
+
+```{r}
+raw %>% 
+  ggbetweenstats(
+    x = acequia,
+    y = tend_mean, 
+    type = "p",
+    xlab = "Acequia", 
+    ylab = "Tendencia de los valores promedio de NDVI"
+  )
+```
+
+
+### Tend max
+
+Tend_max: tendencia de los valores máximos de NDVI de la serie temporal (1984 – 2021
+
+```{r}
+raw %>% 
+  ggbetweenstats(
+    x = acequia,
+    y = tend_max, 
+    type = "p",
+    xlab = "Acequia", 
+    ylab = "Tendencia de los valores maximos de NDVI"
+  )
+```
+
+
